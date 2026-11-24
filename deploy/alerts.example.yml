@@ -1,0 +1,16 @@
+# Example Prometheus alert rules. Add `rule_files: [alerts.yml]` to prometheus.yml to load them.
+groups:
+  - name: ask-my-docs
+    rules:
+      - alert: AskDocsP95LatencyHigh
+        expr: histogram_quantile(0.95, sum(rate(askdocs_request_latency_ms_bucket[5m])) by (le)) > 5000
+        for: 10m
+        annotations: { summary: "p95 end-to-end latency above 5s for 10m" }
+      - alert: AskDocsAbstainRateSpike
+        expr: sum(rate(askdocs_abstentions_total[30m])) / sum(rate(askdocs_requests_total[30m])) > 0.4
+        for: 30m
+        annotations: { summary: "Over 40% of questions refused. Index stale, or users asking about new topics?" }
+      - alert: AskDocsCitationFailures
+        expr: sum(rate(askdocs_citation_failures_total[30m])) / sum(rate(askdocs_requests_total[30m])) > 0.2
+        for: 30m
+        annotations: { summary: "Over 20% of generations fail the citation check. Model or prompt drift?" }

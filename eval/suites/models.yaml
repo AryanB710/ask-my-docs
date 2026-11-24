@@ -1,0 +1,13 @@
+# Same retrieval, different generators. Run against configs/local.yaml:
+#   ollama pull llama3.2:3b qwen2.5:3b phi3.5
+#   askdocs eval --config configs/local.yaml --suite eval/suites/models.yaml --out eval/results/models
+primary: llama3.2:3b
+variants:
+  - name: llama3.2:3b
+    set: {llm.model: "llama3.2:3b"}
+  - name: qwen2.5:3b
+    set: {llm.model: "qwen2.5:3b"}
+  - name: phi3.5
+    set: {llm.model: "phi3.5"}
+  - name: extractive (floor)
+    set: {llm.provider: extractive, llm.model: extractive}

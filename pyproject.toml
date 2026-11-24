@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ask-my-docs"
+version = "0.1.0"
+description = "Production-style RAG: hybrid retrieval, reranking, enforced citations, tracing, and a CI-gated eval pipeline."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  "numpy>=1.26",
+  "scikit-learn>=1.3",
+  "pydantic>=2.5",
+  "pyyaml>=6.0",
+  "requests>=2.31",
+  "pypdf>=4.0",
+  "beautifulsoup4>=4.12",
+]
+
+[project.optional-dependencies]
+api = ["fastapi>=0.110", "uvicorn>=0.27"]
+ml = ["sentence-transformers>=2.7"]
+otel = ["opentelemetry-sdk>=1.24", "opentelemetry-exporter-otlp-proto-http>=1.24"]
+dev = ["pytest>=8.0", "ruff>=0.5", "httpx>=0.27"]
+
+[project.scripts]
+askdocs = "askdocs.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["askdocs*"]
+
+[tool.setuptools.package-data]
+"askdocs.api" = ["static/*.html"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008", "UP007"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

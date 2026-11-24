@@ -1,0 +1,31 @@
+# docker compose up --build
+#   http://localhost:8000            chat UI
+#   http://localhost:8000/dashboard  latency / cost / quality
+#   http://localhost:9090            Prometheus (query askdocs_request_latency_ms_bucket)
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      ASKDOCS_CONFIG: ${ASKDOCS_CONFIG:-configs/offline.yaml}
+    volumes:
+      - ./runs:/app/runs
+    # To use the local LLM profile against the ollama service below, add:
+    #   command: ["askdocs", "serve", "--config", "configs/local.yaml", "--host", "0.0.0.0",
+    #             "--set", "llm.base_url=http://ollama:11434/v1", "--set", "embedding.base_url=http://ollama:11434"]
+    # (configs/local.yaml also needs `pip install .[ml]` for the cross-encoder.)
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local"]          # docker compose --profile local up
+    ports: ["11434:11434"]
+    volumes: [ollama:/root/.ollama]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+    volumes: [./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro]
+    depends_on: [api]
+
+volumes:
+  ollama: {}

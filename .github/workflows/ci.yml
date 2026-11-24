@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write   # sticky eval-results comment on PRs
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -e ".[api,dev]"
+      - run: ruff check askdocs tests
+      - run: pytest
+
+  eval-gate:
+    # Runs the golden set on the deterministic offline profile and fails the build
+    # if retrieval, answer, citation or abstention quality regresses vs eval/baseline.json.
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -e .
+      - name: Run eval suite
+        run: askdocs eval --config configs/offline.yaml --suite eval/suites/ablation.yaml --out eval/results
+      - name: Gate
+        run: askdocs gate --results eval/results/latest.json
+      - name: Build PR comment
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          { echo "## Eval results"; echo; cat eval/results/gate.md 2>/dev/null; echo; echo "<details><summary>Ablations</summary>"; echo;
+            cat eval/results/latest.md; echo; echo "</details>"; } > eval/results/comment.md
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        with:
+          header: eval
+          path: eval/results/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: eval/results/

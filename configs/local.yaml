@@ -1,0 +1,24 @@
+# Fully local, private, free: Ollama for generation + embeddings, cross-encoder rerank on CPU.
+#   ollama pull llama3.2:3b && ollama pull nomic-embed-text
+#   pip install -e ".[ml]"
+name: local
+corpus_dir: data/demo/corpus
+index_dir: runs/index
+chunking: {max_words: 120, overlap_words: 25, contextual_headers: true}
+embedding:
+  provider: ollama
+  model: nomic-embed-text
+  base_url: http://localhost:11434
+  query_prefix: "search_query: "      # nomic-embed-text expects task prefixes
+  doc_prefix: "search_document: "
+retrieval: {mode: hybrid, bm25_k: 30, dense_k: 30, rrf_k: 60, final_k: 5}
+reranker: {provider: cross-encoder, model: cross-encoder/ms-marco-MiniLM-L-6-v2, top_n: 20}
+llm:
+  provider: openai-compatible
+  base_url: http://localhost:11434/v1
+  model: llama3.2:3b
+  temperature: 0
+  max_tokens: 300
+citations: {enforce: true, min_support: 0.6, max_regenerations: 1, on_failure: drop}
+gate: {min_evidence_score: 0.2}   # recalibrate for the cross-encoder: see README "Calibrating the gate"
+observability: {trace_dir: runs/traces, pricing_file: configs/pricing.yaml}

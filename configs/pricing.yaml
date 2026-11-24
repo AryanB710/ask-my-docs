@@ -1,0 +1,9 @@
+# USD per 1M tokens. These are PLACEHOLDERS: copy the current prices from your
+# provider's pricing page before quoting cost numbers anywhere.
+# Models not listed here are counted as $0 (with a warning in the logs).
+models:
+  extractive: {input_per_1m: 0, output_per_1m: 0}
+  "llama3.2:3b": {input_per_1m: 0, output_per_1m: 0}     # local via Ollama
+  "qwen2.5:3b": {input_per_1m: 0, output_per_1m: 0}
+  "phi3.5": {input_per_1m: 0, output_per_1m: 0}
+  gpt-4o-mini: {input_per_1m: 0.15, output_per_1m: 0.60}   # VERIFY before publishing

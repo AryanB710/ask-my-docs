@@ -1,0 +1,35 @@
+name: nightly-eval
+
+# Neural retrieval (bge-small + MiniLM cross-encoder) on CPU, plus the LLM judge if
+# an API key secret exists. Not a PR gate: slower, downloads models, and the judge costs money.
+on:
+  schedule: [{ cron: "30 21 * * *" }]   # 03:00 IST
+  workflow_dispatch:
+
+jobs:
+  full-eval:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # job-level so the judge step's `if:` can see it
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - name: Install (CPU-only torch keeps this ~1 GB smaller)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[ml]"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ hashFiles('configs/ci-full.yaml') }}
+      - name: Eval (neural retrieval, extractive generator)
+        run: askdocs eval --config configs/ci-full.yaml --suite eval/suites/ablation.yaml --out eval/results/full
+      - name: LLM judge on primary variant
+        if: env.OPENAI_API_KEY != ''
+        run: |
+          cp configs/judge.example.yaml configs/judge.yaml
+          askdocs eval --config configs/ci-full.yaml --suite eval/suites/ablation.yaml --only hybrid+rerank --judge configs/judge.yaml --out eval/results/judged
+      - run: cat eval/results/full/latest.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: nightly-eval, path: eval/results/ }

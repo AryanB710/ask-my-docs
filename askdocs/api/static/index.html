@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask My Docs</title>
+<style>
+  :root { --bg:#fcfcfb; --panel:#f3f2ef; --ink:#0b0b0b; --ink2:#52514e; --line:#e4e3df; --accent:#2a78d6; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1a1a19; --panel:#242422; --ink:#f0efec; --ink2:#c3c2b7; --line:#33332f; --accent:#3987e5; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 22px; margin: 0; } .sub { color: var(--ink2); margin: 4px 0 24px; }
+  form { display:flex; gap:8px; }
+  input { flex:1; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font-size:15px; }
+  button { padding:0 18px; border:0; border-radius:10px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:wait; }
+  .examples { margin:10px 0 0; color:var(--ink2); font-size:13px; }
+  .examples a { color:var(--accent); cursor:pointer; margin-right:12px; text-decoration:none; }
+  .card { margin-top:24px; padding:18px 20px; border-radius:12px; background:var(--panel); }
+  .answer { font-size:16px; } .answer sup { color:var(--accent); cursor:pointer; font-weight:600; }
+  .meta { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .chip { font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--ink2); font-variant-numeric:tabular-nums; }
+  .sources { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+  .src { margin:8px 0; font-size:13px; color:var(--ink2); } .src b { color:var(--ink); }
+  .src.hl { outline:2px solid var(--accent); outline-offset:4px; border-radius:4px; }
+  .abstain { color:var(--ink2); font-style:italic; }
+  footer { margin-top:32px; font-size:13px; color:var(--ink2); } footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ask My Docs</h1>
+  <p class="sub">Hybrid retrieval · reranking · every sentence cited, or no answer at all.</p>
+  <form id="f"><input id="q" placeholder="Ask a question about the docs…" autocomplete="off" autofocus><button id="b">Ask</button></form>
+  <div class="examples">Try:
+    <a>What is the publish rate limit on the legacy API?</a>
+    <a>What does error LQ-1033 mean?</a>
+    <a>Is LumenQueue SOC 2 certified?</a>
+  </div>
+  <div id="out"></div>
+  <footer><a href="/dashboard">Observability dashboard</a> · <a href="/metrics">Prometheus metrics</a> · <a href="/docs">API docs</a></footer>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+document.querySelectorAll(".examples a").forEach((a) => a.addEventListener("click", () => { $("#q").value = a.textContent; ask(); }));
+$("#f").addEventListener("submit", (e) => { e.preventDefault(); ask(); });
+
+async function ask() {
+  const question = $("#q").value.trim();
+  if (!question) return;
+  $("#b").disabled = true;
+  $("#out").innerHTML = '<div class="card">Thinking…</div>';
+  try {
+    const r = await fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, include_contexts: true }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || r.statusText);
+    render(d);
+  } catch (err) {
+    $("#out").innerHTML = `<div class="card abstain">Request failed: ${esc(String(err.message || err))}</div>`;
+  } finally {
+    $("#b").disabled = false;
+  }
+}
+
+function render(d) {
+  const body = d.abstained
+    ? `<div class="answer abstain">${esc(d.answer)}</div>`
+    : `<div class="answer">${esc(d.answer).replace(/\[(\d+)\]/g, '<sup data-n="$1">[$1]</sup>')}</div>`;
+  const t = d.timings_ms || {};
+  const stages = ["retrieve", "rerank", "generate", "citations.check"].filter((k) => k in t)
+    .map((k) => `<span class="chip">${k} ${t[k].toFixed(1)} ms</span>`).join("");
+  const meta = `<div class="meta"><span class="chip">total ${(t.ask || 0).toFixed(1)} ms</span>${stages}
+    <span class="chip">evidence ${(d.quality.evidence_score ?? 0).toFixed(2)}</span>
+    <span class="chip">$${(d.usage.cost_usd || 0).toFixed(5)}</span>
+    ${d.abstained ? `<span class="chip">abstained: ${esc(d.abstain_reason)}</span>` : ""}</div>`;
+  const cited = new Set((d.citations || []).map((c) => c.n));
+  const srcs = (d.contexts || []).filter((c) => d.abstained || cited.has(c.n))
+    .map((c) => `<div class="src" id="src-${c.n}"><b>[${c.n}] ${esc(c.header)}</b> · ${esc(c.doc_id)}<br>${esc(c.text.slice(0, 320))}${c.text.length > 320 ? "…" : ""}</div>`).join("");
+  $("#out").innerHTML = `<div class="card">${body}${meta}${srcs ? `<div class="sources">${d.abstained ? "<b>Closest passages (not used):</b>" : ""}${srcs}</div>` : ""}</div>`;
+  document.querySelectorAll("sup[data-n]").forEach((s) => s.addEventListener("click", () => {
+    document.querySelectorAll(".src").forEach((e) => e.classList.remove("hl"));
+    const el = document.getElementById("src-" + s.dataset.n);
+    if (el) { el.classList.add("hl"); el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  }));
+}
+</script>
+</body>
+</html>

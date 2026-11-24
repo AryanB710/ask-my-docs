@@ -1,0 +1,616 @@
+{
+  "generated_at": "2026-11-24 19:11 UTC",
+  "git_sha": null,
+  "config": "configs/offline.yaml",
+  "golden": "eval/golden.jsonl",
+  "n_questions": 55,
+  "primary": "hybrid+rerank",
+  "variants": {
+    "bm25": {
+      "settings": {
+        "chunking": {
+          "max_words": 120,
+          "overlap_words": 25,
+          "contextual_headers": true
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "bm25",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "none",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "5eebdd5cf597cd91",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 48,
+        "embedding": null,
+        "build_seconds": 0.004,
+        "built_at": "2026-11-24T19:11:43Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 1.0,
+        "mrr@10": 0.9329861111111111,
+        "ndcg@10": 0.9495706015093927,
+        "answer_accuracy": 0.7916666666666666,
+        "keyword_recall": 0.7916666666666666,
+        "citation_precision": 0.8444444444444444,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 0.832,
+        "latency_p95_ms": 1.1744999999999997,
+        "latency_p99_ms": 1.38986,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 467.6363636363636,
+        "stages_p50_ms": {
+          "citations.check": 0.139,
+          "fuse": 0.011,
+          "gate": 0.003,
+          "generate": 0.301,
+          "retrieve": 0.343,
+          "retrieve.bm25": 0.111
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.276,
+          "fuse": 0.0203,
+          "gate": 0.004,
+          "generate": 0.4095,
+          "retrieve": 0.5259999999999999,
+          "retrieve.bm25": 0.22319999999999995
+        }
+      }
+    },
+    "dense": {
+      "settings": {
+        "chunking": {
+          "max_words": 120,
+          "overlap_words": 25,
+          "contextual_headers": true
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "dense",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "none",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "5eebdd5cf597cd91",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 48,
+        "embedding": "lsa-256",
+        "build_seconds": 1.118,
+        "built_at": "2026-11-24T19:11:45Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 0.9791666666666666,
+        "mrr@10": 0.9296875,
+        "ndcg@10": 0.9466391145849048,
+        "answer_accuracy": 0.7916666666666666,
+        "keyword_recall": 0.7916666666666666,
+        "citation_precision": 0.8333333333333334,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 1.491,
+        "latency_p95_ms": 1.6925,
+        "latency_p99_ms": 1.7431400000000001,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 462.58181818181816,
+        "stages_p50_ms": {
+          "citations.check": 0.1265,
+          "embed.query": 0.671,
+          "fuse": 0.017,
+          "gate": 0.004,
+          "generate": 0.2915,
+          "retrieve": 0.998,
+          "retrieve.dense": 0.043
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.25625,
+          "embed.query": 0.7649,
+          "fuse": 0.03429999999999994,
+          "gate": 0.004,
+          "generate": 0.3665,
+          "retrieve": 1.0806,
+          "retrieve.dense": 0.06269999999999995
+        }
+      }
+    },
+    "hybrid (RRF)": {
+      "settings": {
+        "chunking": {
+          "max_words": 120,
+          "overlap_words": 25,
+          "contextual_headers": true
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "hybrid",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "none",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "5eebdd5cf597cd91",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 48,
+        "embedding": "lsa-256",
+        "build_seconds": 1.118,
+        "built_at": "2026-11-24T19:11:45Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 0.9791666666666666,
+        "mrr@10": 0.9295138888888889,
+        "ndcg@10": 0.9465749179074766,
+        "answer_accuracy": 0.7916666666666666,
+        "keyword_recall": 0.7916666666666666,
+        "citation_precision": 0.8333333333333334,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 1.648,
+        "latency_p95_ms": 1.868,
+        "latency_p99_ms": 2.735900000000001,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 467.2,
+        "stages_p50_ms": {
+          "citations.check": 0.1355,
+          "embed.query": 0.661,
+          "fuse": 0.037,
+          "gate": 0.004,
+          "generate": 0.285,
+          "retrieve": 1.118,
+          "retrieve.bm25": 0.114,
+          "retrieve.dense": 0.041
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.24475,
+          "embed.query": 0.7006,
+          "fuse": 0.043,
+          "gate": 0.004,
+          "generate": 0.42774999999999996,
+          "retrieve": 1.2348,
+          "retrieve.bm25": 0.14719999999999997,
+          "retrieve.dense": 0.051
+        }
+      }
+    },
+    "hybrid+rerank": {
+      "settings": {
+        "chunking": {
+          "max_words": 120,
+          "overlap_words": 25,
+          "contextual_headers": true
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "hybrid",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "lite",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "5eebdd5cf597cd91",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 48,
+        "embedding": "lsa-256",
+        "build_seconds": 1.118,
+        "built_at": "2026-11-24T19:11:45Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 1.0,
+        "mrr@10": 0.9392361111111112,
+        "ndcg@10": 0.9546555378914118,
+        "answer_accuracy": 0.7916666666666666,
+        "keyword_recall": 0.7916666666666666,
+        "citation_precision": 0.8444444444444444,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 2.17,
+        "latency_p95_ms": 2.3929,
+        "latency_p99_ms": 2.44322,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 492.07272727272726,
+        "stages_p50_ms": {
+          "citations.check": 0.1325,
+          "embed.query": 0.675,
+          "fuse": 0.037,
+          "gate": 0.004,
+          "generate": 0.3175,
+          "rerank": 0.716,
+          "retrieve": 1.658,
+          "retrieve.bm25": 0.117,
+          "retrieve.dense": 0.042
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.23825,
+          "embed.query": 0.7259,
+          "fuse": 0.049,
+          "gate": 0.004,
+          "generate": 0.397,
+          "rerank": 0.7952,
+          "retrieve": 1.7459,
+          "retrieve.bm25": 0.14319999999999997,
+          "retrieve.dense": 0.07429999999999999
+        }
+      }
+    },
+    "hybrid+rerank, no headers": {
+      "settings": {
+        "chunking": {
+          "max_words": 120,
+          "overlap_words": 25,
+          "contextual_headers": false
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "hybrid",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "lite",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "a4d5536975736bae",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 48,
+        "embedding": "lsa-256",
+        "build_seconds": 0.018,
+        "built_at": "2026-11-24T19:11:45Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 1.0,
+        "mrr@10": 0.9444444444444445,
+        "ndcg@10": 0.9588274794642881,
+        "answer_accuracy": 0.75,
+        "keyword_recall": 0.75,
+        "citation_precision": 0.8333333333333334,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 2.326,
+        "latency_p95_ms": 3.4427999999999996,
+        "latency_p99_ms": 33.66426000000005,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 491.4909090909091,
+        "stages_p50_ms": {
+          "citations.check": 0.1615,
+          "embed.query": 0.727,
+          "fuse": 0.041,
+          "gate": 0.004,
+          "generate": 0.423,
+          "rerank": 0.767,
+          "retrieve": 1.742,
+          "retrieve.bm25": 0.138,
+          "retrieve.dense": 0.049
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.33575,
+          "embed.query": 0.9329,
+          "fuse": 0.06009999999999998,
+          "gate": 0.006,
+          "generate": 0.602,
+          "rerank": 1.2523999999999997,
+          "retrieve": 2.590499999999999,
+          "retrieve.bm25": 0.2158,
+          "retrieve.dense": 0.0829
+        }
+      }
+    },
+    "hybrid+rerank, 250-word chunks": {
+      "settings": {
+        "chunking": {
+          "max_words": 250,
+          "overlap_words": 40,
+          "contextual_headers": true
+        },
+        "embedding": {
+          "provider": "lsa",
+          "model": "lsa-256",
+          "dims": 256,
+          "base_url": null,
+          "api_key_env": null,
+          "query_prefix": "",
+          "doc_prefix": "",
+          "batch_size": 32
+        },
+        "retrieval": {
+          "mode": "hybrid",
+          "bm25_k": 30,
+          "dense_k": 30,
+          "rrf_k": 60,
+          "final_k": 5,
+          "bm25_k1": 1.5,
+          "bm25_b": 0.75
+        },
+        "reranker": {
+          "provider": "lite",
+          "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+          "top_n": 20
+        },
+        "llm": {
+          "provider": "extractive",
+          "model": "extractive",
+          "base_url": "http://localhost:11434/v1",
+          "api_key_env": null,
+          "temperature": 0.0,
+          "max_tokens": 400,
+          "timeout_s": 60.0,
+          "max_retries": 2
+        },
+        "citations": {
+          "enforce": true,
+          "min_support": 0.6,
+          "max_regenerations": 1,
+          "on_failure": "drop"
+        },
+        "gate": {
+          "min_evidence_score": 0.3
+        }
+      },
+      "index": {
+        "index_key": "3db8389116960fe2",
+        "corpus_fingerprint": "c7c282dc157d273a",
+        "n_docs": 9,
+        "n_chunks": 47,
+        "embedding": "lsa-256",
+        "build_seconds": 0.018,
+        "built_at": "2026-11-24T19:11:45Z"
+      },
+      "metrics": {
+        "n": 55,
+        "n_answerable": 48,
+        "n_unanswerable": 7,
+        "recall@5": 1.0,
+        "mrr@10": 0.9392361111111112,
+        "ndcg@10": 0.9546555378914118,
+        "answer_accuracy": 0.7916666666666666,
+        "keyword_recall": 0.7916666666666666,
+        "citation_precision": 0.8666666666666667,
+        "support_ratio": 1.0,
+        "unanswerable_abstain_rate": 0.8571428571428571,
+        "false_abstain_rate": 0.0625,
+        "citation_retry_rate": 0.0,
+        "latency_p50_ms": 2.236,
+        "latency_p95_ms": 2.9170999999999996,
+        "latency_p99_ms": 3.61604,
+        "cost_per_1k_usd": 0.0,
+        "avg_prompt_tokens": 503.5272727272727,
+        "stages_p50_ms": {
+          "citations.check": 0.149,
+          "embed.query": 0.684,
+          "fuse": 0.038,
+          "gate": 0.004,
+          "generate": 0.3265,
+          "rerank": 0.737,
+          "retrieve": 1.678,
+          "retrieve.bm25": 0.117,
+          "retrieve.dense": 0.041
+        },
+        "stages_p95_ms": {
+          "citations.check": 0.27775,
+          "embed.query": 1.1090999999999989,
+          "fuse": 0.05159999999999999,
+          "gate": 0.005299999999999997,
+          "generate": 0.415,
+          "rerank": 0.972299999999999,
+          "retrieve": 2.8115,
+          "retrieve.bm25": 0.19369999999999987,
+          "retrieve.dense": 0.07909999999999998
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# Zero-download profile: CI, tests, and first run on any laptop.
+# LSA stands in for a neural embedder, the "lite" lexical scorer for a cross-encoder,
+# and the extractive generator for an LLM. Every number is deterministic.
+name: offline
+corpus_dir: data/demo/corpus
+index_dir: runs/index
+chunking: {max_words: 120, overlap_words: 25, contextual_headers: true}
+embedding: {provider: lsa, model: lsa-256, dims: 256}
+retrieval: {mode: hybrid, bm25_k: 30, dense_k: 30, rrf_k: 60, final_k: 5}
+reranker: {provider: lite, top_n: 20}
+llm: {provider: extractive, model: extractive}
+citations: {enforce: true, min_support: 0.6, max_regenerations: 1, on_failure: drop}
+gate: {min_evidence_score: 0.30}   # from `askdocs calibrate` (see README)
+observability: {trace_dir: runs/traces, pricing_file: configs/pricing.yaml}

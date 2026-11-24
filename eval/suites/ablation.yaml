@@ -1,0 +1,15 @@
+# Each variant = base config + overrides. The `primary` variant is the one the CI gate checks.
+primary: hybrid+rerank
+variants:
+  - name: bm25
+    set: {retrieval.mode: bm25, reranker.provider: none}
+  - name: dense
+    set: {retrieval.mode: dense, reranker.provider: none}
+  - name: hybrid (RRF)
+    set: {retrieval.mode: hybrid, reranker.provider: none}
+  - name: hybrid+rerank
+    set: {}
+  - name: hybrid+rerank, no headers
+    set: {chunking.contextual_headers: false}
+  - name: hybrid+rerank, 250-word chunks
+    set: {chunking.max_words: 250, chunking.overlap_words: 40}

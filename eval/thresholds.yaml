@@ -1,0 +1,25 @@
+# The CI gate checks the `variant` row of eval/results/latest.json.
+variant: hybrid+rerank
+
+# Absolute floors/ceilings: "is this good enough to ship at all?"
+# Set a little below the current offline numbers so they catch real breakage.
+absolute:
+  recall@5:                  {min: 0.95}
+  mrr@10:                    {min: 0.85}
+  answer_accuracy:           {min: 0.70}
+  citation_precision:        {min: 0.75}
+  support_ratio:             {min: 0.95}   # share of answer sentences that pass the citation check
+  unanswerable_abstain_rate: {min: 0.70}   # out-of-scope questions must be refused
+  false_abstain_rate:        {max: 0.15}
+  latency_p95_ms:            {max: 250}    # offline profile, no model calls; generous for shared CI runners
+
+# Regression vs eval/baseline.json: "did this PR make it worse?"
+# The offline profile is deterministic, so quality deltas are real, not noise.
+# 0.025 allows one of the 48 answerable questions to flip (1/48 = 0.021), not two.
+regression:
+  max_quality_drop: 0.025
+  max_latency_increase_pct: 100   # CI runners are noisy...
+  latency_floor_ms: 25            # ...so latency needs a 2x blowup plus 25 ms to fail
+  max_cost_increase_pct: 10
+  metrics: [recall@5, mrr@10, ndcg@10, answer_accuracy, citation_precision, support_ratio,
+            unanswerable_abstain_rate, false_abstain_rate, latency_p95_ms, cost_per_1k_usd]
