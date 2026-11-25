@@ -25,10 +25,10 @@ flowchart LR
     CHK -- unsupported --> LLM
     CHK -- still unsupported --> DROP[Drop sentence<br/>or abstain]
     CHK -- ok --> A[Answer + citations]
-    subgraph Observability
-      T[Spans per stage → JSONL / OTLP]
-      M[Prometheus /metrics: p50/p95, tokens, cost]
-      D[/dashboard]
+        subgraph Observability
+      T["Spans per stage → JSONL / OTLP"]
+      M["Prometheus /metrics: p50/p95, tokens, cost"]
+      D["/dashboard"]
     end
     A -.-> T
     ABS -.-> T
