@@ -12,28 +12,29 @@
 ## Architecture
 
 ```mermaid
+```mermaid
 flowchart LR
-    Q[Question] --> BM25[BM25<br/>inverted index]
-    Q --> EMB[Embed query] --> VEC[Vector search<br/>cosine, numpy]
-    BM25 --> RRF[Reciprocal Rank<br/>Fusion k=60]
+    Q["Question"] --> BM25["BM25<br/>inverted index"]
+    Q --> EMB["Embed query"]
+    EMB --> VEC["Vector search<br/>cosine, numpy"]
+    BM25 --> RRF["Reciprocal Rank<br/>Fusion k=60"]
     VEC --> RRF
-    RRF --> RR[Rerank top 20<br/>cross-encoder]
-    RR --> GATE{Evidence<br/>gate}
-    GATE -- weak --> ABS[Abstain<br/>no LLM call]
-    GATE -- ok --> LLM[LLM with<br/>numbered sources]
-    LLM --> CHK{Citation<br/>check}
+    RRF --> RR["Rerank top 20<br/>cross-encoder"]
+    RR --> GATE{"Evidence<br/>gate"}
+    GATE -- weak --> ABS["Abstain<br/>no LLM call"]
+    GATE -- ok --> LLM["LLM with<br/>numbered sources"]
+    LLM --> CHK{"Citation<br/>check"}
     CHK -- unsupported --> LLM
-    CHK -- still unsupported --> DROP[Drop sentence<br/>or abstain]
-    CHK -- ok --> A[Answer + citations]
-        subgraph Observability
-      T["Spans per stage → JSONL / OTLP"]
-      M["Prometheus /metrics: p50/p95, tokens, cost"]
-      D["/dashboard"]
+    CHK -- still unsupported --> DROP["Drop sentence<br/>or abstain"]
+    CHK -- ok --> A["Answer + citations"]
+    subgraph Observability
+      T["Spans per stage: JSONL / OTLP"]
+      M["Prometheus metrics: p50/p95, tokens, cost"]
+      D["Dashboard"]
     end
     A -.-> T
     ABS -.-> T
 ```
-
 ## Results
 
 ### CI profile (deterministic, runs on every PR)
