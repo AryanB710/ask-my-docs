@@ -12,7 +12,6 @@
 ## Architecture
 
 ```mermaid
-```mermaid
 flowchart LR
     Q["Question"] --> BM25["BM25<br/>inverted index"]
     Q --> EMB["Embed query"]
